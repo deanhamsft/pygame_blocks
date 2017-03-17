@@ -17,7 +17,7 @@ class Player(pygame.sprite.Sprite):
         self.score = 0
 
     def move_up(self):
-        self.rect.y -= 2
+        self.rect.y -= 1
 
     def move_down(self):
         self.rect.y += 2

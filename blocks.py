@@ -2,14 +2,14 @@ import pygame
 import sys
 import random
 
-class Mushroom(pygame.sprite.Sprite):
+class Defender(pygame.sprite.Sprite):
     def __init__(self, image_name, score):
         super().__init__()
         self.image = pygame.image.load(image_name).convert()
         self.rect = self.image.get_rect()
         self.score = score
 
-class Player(pygame.sprite.Sprite):
+class Quaterback(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("player_left.png").convert()
@@ -20,15 +20,15 @@ class Player(pygame.sprite.Sprite):
         self.rect.y -= 1
 
     def move_down(self):
-        self.rect.y += 2
+        self.rect.y += 1
         pass
 
     def move_left(self):
-        self.rect.x -= 2
+        self.rect.x -= 1
         pass
 
     def move_right(self):
-        self.rect.x += 2
+        self.rect.x += 1
         pass
 
 BLACK = (0, 0, 0)
@@ -38,25 +38,25 @@ pygame.init()
 
 dimensions = (320, 240)
 screen = pygame.display.set_mode(dimensions)
-all_mushrooms = pygame.sprite.Group()
-player_group = pygame.sprite.Group()
+all_defenders = pygame.sprite.Group()
+quaterback_group = pygame.sprite.Group()
 
 for i in range(0, 50):
-    mushroom = Mushroom("red_shroom.png", -10)
-    mushroom.rect.x = random.randrange(0, 320)
-    mushroom.rect.y = random.randrange(0, 240)
-    all_mushrooms.add(mushroom)
+    defender = Defender("red_shroom.png", -10)
+    defender.rect.x = random.randrange(0, 320)
+    defender.rect.y = random.randrange(0, 240)
+    all_defenders.add(defender)
 
 for i in range(0, 50):
-    mushroom = Mushroom("green_shroom.png", 10)
-    mushroom.rect.x = random.randrange(0, 320)
-    mushroom.rect.y = random.randrange(0, 240)
-    all_mushrooms.add(mushroom)
+    defender = Defender("green_shroom.png", 10)
+    defender.rect.x = random.randrange(0, 320)
+    defender.rect.y = random.randrange(0, 240)
+    all_defenders.add(defender)
 
-player = Player()
-player.rect.x = 160
-player.rect.y = 120
-player_group.add(player)
+quaterback = Quaterback()
+quaterback.rect.x = 160
+quaterback.rect.y = 120
+quaterback_group.add(quaterback)
 
 keys_pressed = { pygame.K_w: False, pygame.K_a: False, pygame.K_s: False, pygame.K_d: False }
 
@@ -75,25 +75,25 @@ while True:
                 keys_pressed[event.key] = False            
 
     if keys_pressed[pygame.K_a]:
-        player.move_left()
+        quaterback.move_left()
     elif keys_pressed[pygame.K_d]:
-        player.move_right()
+        quaterback.move_right()
     
     if keys_pressed[pygame.K_w]:
-        player.move_up()
+        quaterback.move_up()
     elif keys_pressed[pygame.K_s]:
-        player.move_down()
+        quaterback.move_down()
 
-    mushrooms_hit_list = pygame.sprite.spritecollide(player, all_mushrooms, True)
-    for mushroom in mushrooms_hit_list:
-        player.score += mushroom.score
-        mushroom.kill()
+    defenders_hit_list = pygame.sprite.spritecollide(quaterback, all_defenders, True)
+    for defender in defenders_hit_list:
+        quaterback.score += defender.score
+        defender.kill()
 
     screen.fill(BLACK)
-    all_mushrooms.draw(screen)
-    player_group.draw(screen)
+    all_defenders.draw(screen)
+    quaterback_group.draw(screen)
 
-    score_label = score_font.render("Score: {}".format(player.score), 1, WHITE)
+    score_label = score_font.render("Score: {}".format(quaterback.score), 1, WHITE)
     screen.blit(score_label, (160 - score_label.get_rect().width / 2, 10))
 
     pygame.display.flip()

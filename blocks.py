@@ -26,14 +26,14 @@ class Move():
 class Defender(pygame.sprite.Sprite):
     def __init__(self, image_name, score):
         super().__init__()
-        self.image = pygame.image.load(image_name).convert()
+        self.image = pygame.image.load(image_name).convert_alpha()
         self.rect = self.image.get_rect()
         self.score = score
 
 class Quaterback(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("quarterback.png").convert()
+        self.image = pygame.image.load("quarterback.png").convert_alpha()
         self.rect = self.image.get_rect()
         self.score = 0
 
@@ -55,16 +55,16 @@ field_group = pygame.sprite.Group()
 all_defenders = pygame.sprite.Group()
 quaterback_group = pygame.sprite.Group()
 
-for i in range(0, 50):
+for i in range(80, 400, 32):
     defender = Defender("defender.png", -10)
-    defender.rect.x = random.randrange(0, DIMENSIONS[0])
-    defender.rect.y = random.randrange(0, DIMENSIONS[1])
+    defender.rect.x = 340
+    defender.rect.y = i
     all_defenders.add(defender)
 
-for i in range(0, 50):
+for i in range(80, 400, 32):
     defender = Defender("offense.png", 10)
-    defender.rect.x = random.randrange(0, DIMENSIONS[0])
-    defender.rect.y = random.randrange(0, DIMENSIONS[1])
+    defender.rect.x = 300
+    defender.rect.y = i
     all_defenders.add(defender)
 
 field = Field()

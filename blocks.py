@@ -46,6 +46,33 @@ class Field(pygame.sprite.Sprite):
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 DIMENSIONS = (640, 480)
+DEFENCE_FORMATION = {
+    'corner1': [340, 80], 
+    'corner2': [340, 400], 
+    'o_line_back1': [330, 112], 
+    'o_line_back2': [330, 368], 
+    'end1': [330, 144], 
+    'end2': [330, 336], 
+    'tackle1': [330, 176], 
+    'tackle2': [330, 304], 
+    'middle_linebacker': [330, 208], 
+    'safety1': [340, 176], 
+    'safety2': [340, 304] 
+    }
+
+OFFENCE_POSITION = {
+    'wide_receiver1': [290, 80], 
+    'wide_receiver2': [290, 400],
+    'tight_end': [300, 112], 
+    'tackle1': [300, 368], 
+    'tackle2': [300, 144], 
+    'guard1': [300, 336], 
+    'guard2': [300, 176], 
+    'center': [300, 304], 
+    'quarterback': [285, 208], 
+    'fullback': [270, 208], 
+    'halfback': [250, 208]    
+    }
 
 pygame.init()
 
@@ -55,16 +82,16 @@ field_group = pygame.sprite.Group()
 all_defenders = pygame.sprite.Group()
 quaterback_group = pygame.sprite.Group()
 
-for i in range(80, 400, 32):
+for v in DEFENCE_FORMATION.items():
     defender = Defender("defender.png", -10)
-    defender.rect.x = 340
-    defender.rect.y = i
+    defender.rect.x = v[1][0]
+    defender.rect.y = v[1][1]
     all_defenders.add(defender)
 
-for i in range(80, 400, 32):
+for v in OFFENCE_POSITION.items():
     defender = Defender("offense.png", 10)
-    defender.rect.x = 300
-    defender.rect.y = i
+    defender.rect.x = v[1][0]
+    defender.rect.y = v[1][1]
     all_defenders.add(defender)
 
 field = Field()

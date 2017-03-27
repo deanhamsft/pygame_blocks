@@ -2,6 +2,7 @@ import pygame
 import sys
 import random
 import time
+import math
 
 class Move():
     def __init__(self):
@@ -23,14 +24,22 @@ class Move():
         self.rect.x += 1
         pass
 
+class Fire_Path():
+    def __init__(self):
+        pass
+
+    def artilery(self, source_coords, target_coords):
+        angle = math.atan2(target_coords[1] - source_coords[1], target_coords[0] - source_coords[0])
+        pass
+
 class Defender(pygame.sprite.Sprite):
-    def __init__(self, image_name, score):
+    def __init__(self, image_name, Offence):
         super().__init__()
         self.image = pygame.image.load(image_name).convert_alpha()
         self.rect = self.image.get_rect()
-        self.score = score
+        self.score = Offence
 
-class Quaterback(pygame.sprite.Sprite):
+class Quarterback(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load("quarterback.png").convert_alpha()
@@ -43,44 +52,64 @@ class Field(pygame.sprite.Sprite):
         self.image = pygame.image.load("field.png").convert()
         self.rect = self.image.get_rect()
 
+class Crosshair(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load("cross.png").convert_alpha()
+        self.rect = self.image.get_rect()
+
+    def update(self, pos):
+        self.rect = pos
+
+class Football(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load("football.png").convert_alpha()
+        self.rect = self.image.get_rect()
+
+    def update(self, pos):
+        self.rect = pos
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 DIMENSIONS = (640, 480)
 DEFENCE_FORMATION = {
-    'corner1': [340, 80], 
-    'corner2': [340, 400], 
-    'o_line_back1': [330, 112], 
-    'o_line_back2': [330, 368], 
+    'corner1': [370, 80], 
+    'o_line_back1': [355, 112], 
     'end1': [330, 144], 
-    'end2': [330, 336], 
     'tackle1': [330, 176], 
-    'tackle2': [330, 304], 
+    'safety1': [355, 176], 
     'middle_linebacker': [330, 208], 
-    'safety1': [340, 176], 
-    'safety2': [340, 304] 
+    'tackle2': [330, 240], 
+    'safety2': [355, 240] ,
+    'end2': [330, 272],
+    'o_line_back2': [355, 304], 
+    'corner2': [370, 336]
     }
 
 OFFENCE_POSITION = {
     'wide_receiver1': [290, 80], 
-    'wide_receiver2': [290, 400],
     'tight_end': [300, 112], 
-    'tackle1': [300, 368], 
     'tackle2': [300, 144], 
-    'guard1': [300, 336], 
     'guard2': [300, 176], 
-    'center': [300, 304], 
-    'quarterback': [285, 208], 
-    'fullback': [270, 208], 
-    'halfback': [250, 208]    
+    'fullback': [235, 208], 
+    'halfback': [215, 208],  
+    'center': [300, 240], 
+    'guard1': [300, 272], 
+    'tackle1': [300, 304], 
+    'wide_receiver2': [290, 336]
     }
 
 pygame.init()
 
-
+pygame.mouse.set_visible ( False ) 
 screen = pygame.display.set_mode(DIMENSIONS)
 field_group = pygame.sprite.Group()
 all_defenders = pygame.sprite.Group()
-quaterback_group = pygame.sprite.Group()
+all_offence = pygame.sprite.Group()
+quarterback_group = pygame.sprite.Group()
+target_group = pygame.sprite.Group()
+football_group = pygame.sprite.Group()
 
 for v in DEFENCE_FORMATION.items():
     defender = Defender("defender.png", -10)
@@ -92,23 +121,32 @@ for v in OFFENCE_POSITION.items():
     defender = Defender("offense.png", 10)
     defender.rect.x = v[1][0]
     defender.rect.y = v[1][1]
-    all_defenders.add(defender)
+    all_offence.add(defender)
 
 field = Field()
 field.rect.x = 0
 field.rect.y = 0
 field_group.add(field)
 
-quaterback = Quaterback()
-quaterback.rect.x = DIMENSIONS[0] / 2
-quaterback.rect.y = DIMENSIONS[1] / 2
-quaterback_group.add(quaterback)
+quarterback = Quarterback()
+quarterback.rect.x = 285
+quarterback.rect.y = 208
+quarterback_group.add(quarterback)
+
+target = Crosshair()
+target.rect = (0,0)
+target_group.add(target)
+
+football = Football()
+football.rect = quarterback.rect
+football_group.add(football)
 
 keys_pressed = { pygame.K_w: False, pygame.K_a: False, pygame.K_s: False, pygame.K_d: False }
 
 score_font = pygame.font.SysFont("monospace", 15)
 
 while True:
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -118,7 +156,9 @@ while True:
                 keys_pressed[event.key] = True
         elif event.type == pygame.KEYUP:
             if event.key in keys_pressed:
-                keys_pressed[event.key] = False            
+                keys_pressed[event.key] = False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            football.update()
 
     if keys_pressed[pygame.K_a]:
         Move.move_left(quaterback)
@@ -130,19 +170,29 @@ while True:
     elif keys_pressed[pygame.K_s]:
         Move.move_down(quaterback)
 
-    defenders_hit_list = pygame.sprite.spritecollide(quaterback, all_defenders, True)
+    target_pos = pygame.mouse.get_pos()
+    target.update(target_pos)
+
+
+    defenders_hit_list = pygame.sprite.spritecollide(quarterback, all_defenders, True)
     for defender in defenders_hit_list:
         quaterback.score += defender.score
         defender.kill()
     
+    #if football:
+        #football.update()
+
 
     screen.fill(BLACK)
-    
+
     field_group.draw(screen)
     all_defenders.draw(screen)
-    quaterback_group.draw(screen)
+    all_offence.draw(screen)
+    quarterback_group.draw(screen)
+    target_group.draw(screen)
+    football_group.draw(screen)
 
-    score_label = score_font.render("Score: {}".format(quaterback.score), 1, WHITE)
+    score_label = score_font.render("Score: {}".format(quarterback.score), 1, WHITE)
     screen.blit(score_label, ((DIMENSIONS[0] / 2) - score_label.get_rect().width / 2, 10))
 
     pygame.display.flip()

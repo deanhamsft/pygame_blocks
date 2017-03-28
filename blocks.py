@@ -159,6 +159,7 @@ while True:
                 keys_pressed[event.key] = False
         elif event.type == pygame.MOUSEBUTTONDOWN:
             football.update()
+            #go get some of the code from archer to do the football
 
     if keys_pressed[pygame.K_a]:
         Move.move_left(quaterback)

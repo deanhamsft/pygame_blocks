@@ -28,8 +28,11 @@ class Fire_Path():
     def __init__(self):
         pass
 
-    def artilery(self, source_coords, target_coords):
-        angle = math.atan2(target_coords[1] - source_coords[1], target_coords[0] - source_coords[0])
+    def artilery(self, football):
+        velx=math.cos(football.rect.x) * 10
+        vely=math.sin(football.rect.y) * 10
+        football.rect.x += velx
+        football.rect.y += vely
         pass
 
 class Defender(pygame.sprite.Sprite):
@@ -61,13 +64,18 @@ class Crosshair(pygame.sprite.Sprite):
     def update(self, pos):
         self.rect = pos
 
-class Football(pygame.sprite.Sprite):
+class Football(pygame.sprite.Sprite, rads):
     def __init__(self):
         super().__init__()
+        rads = rads
         self.image = pygame.image.load("football.png").convert_alpha()
         self.rect = self.image.get_rect()
 
     def update(self, pos):
+        velx=math.cos(self.rect.x) * 10
+        vely=math.sin(self.rect.y) * 10
+        self.rect.x += velx
+        self.rect.y += vely
         self.rect = pos
 
 BLACK = (0, 0, 0)
@@ -137,7 +145,7 @@ target = Crosshair()
 target.rect = (0,0)
 target_group.add(target)
 
-football = Football()
+football = Football(math.atan2(target.rect.y - quarterback.rect.y, target.rect.x - quarterback.rect.x))
 football.rect = quarterback.rect
 football_group.add(football)
 
